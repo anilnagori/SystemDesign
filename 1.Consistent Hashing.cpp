@@ -66,3 +66,60 @@ for n = 5, return
   [270,359,4]
 
 */
+
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+#include <cassert>
+
+using namespace std;
+
+vector<vector<int>> consistentHashing(int n) {
+    if (n == 0) {
+        return { };
+    }
+
+    auto pqCmp = [] (const vector<int>& v1, const vector<int>& v2) {
+        return v1[1] - v1[0] < v2[1] - v2[0];
+    };
+
+    priority_queue<vector<int>, vector<vector<int>>, decltype(pqCmp)> maxPq(pqCmp);
+
+    maxPq.push({0, 359, 1});
+
+    int k = 2;
+
+    while (k <= n) {
+        assert(!maxPq.empty());
+
+        auto top = move(maxPq.top());
+        int p = top[0] + (top[1] - top[0]) / 2;
+
+        maxPq.pop();
+        maxPq.push({top[0], p, k});
+        maxPq.push({p + 1, top[1], top[2]});
+        ++k;
+    }
+
+    assert(maxPq.size() == n);
+
+    vector<vector<int>> assigment;
+
+    while (!maxPq.empty()) {
+      assigment.push_back(move(maxPq.top()));
+      maxPq.pop();
+    }
+
+    return assigment;
+}
+
+int main() {
+    auto assigment = consistentHashing(10);
+
+    for (auto& v : assigment) {
+      copy(v.begin(), v.end(), ostream_iterator<int>(cout, ", "));
+      cout << endl;
+    }
+}
