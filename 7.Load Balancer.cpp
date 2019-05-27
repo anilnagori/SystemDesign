@@ -29,3 +29,75 @@ pick()
 >> 3
 
 */
+
+#include <vector>
+#include <unordered_map>
+#include <map>
+#include <set>
+#include <string>
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+#include <sstream> 
+#include <cassert>
+
+using namespace std;
+
+class LoadBalancer {
+public:
+  LoadBalancer() { }
+  
+  void add(int serverId) {
+    if (serverToIndex.count(serverId)) {
+      return;
+    }
+
+    serverToIndex[serverId] = indexToServer.size();
+    indexToServer.push_back(serverId);
+  }
+
+  void remove(int serverId) {
+    if (serverToIndex.count(serverId)) {
+      return;
+    }
+
+    int index = serverToIndex[serverId];
+    int endServerId = indexToServer.back();
+
+    indexToServer[index] = endServerId;
+    serverToIndex[endServerId] = index;
+    serverToIndex.erase(serverId);
+    indexToServer.pop_back();
+  }
+
+  int pick() {
+    int index = random() % indexToServer.size();
+
+    return indexToServer[index];
+  }
+
+private:
+  unordered_map<int, int> serverToIndex;
+  vector<int> indexToServer;
+};
+
+int main() {
+  LoadBalancer loadBalancer;
+
+  loadBalancer.add(1);
+  loadBalancer.add(2);
+  loadBalancer.add(3);
+
+  cout << "pick " << loadBalancer.pick() << endl;
+  cout << "pick " << loadBalancer.pick() << endl;
+  cout << "pick " << loadBalancer.pick() << endl;
+  cout << "pick " << loadBalancer.pick() << endl;
+
+  loadBalancer.remove(1);
+
+  cout << "pick " << loadBalancer.pick() << endl;
+  cout << "pick " << loadBalancer.pick() << endl;
+  cout << "pick " << loadBalancer.pick() << endl;
+}
+
+
