@@ -26,3 +26,51 @@ If the top10 List size is greater than 10, the last element is deleted.
 
 */
 
+#include <vector>
+#include <unordered_map>
+#include <map>
+#include <set>
+#include <string>
+#include <list>
+#include <stack>
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+#include <sstream> 
+#include <cassert>
+#include <climits>
+
+using namespace std;
+
+struct TrieNode {
+  unordered_map<char, TrieNode*> children;
+  set<int> indices;
+};
+
+class TrieService {
+public:
+  // @param word a string
+  // @param frequency an integer
+  void insert(string word, int frequency) {
+    TrieNode* curr = &root;
+    
+    for (char c : word) {
+      int idx = c - 'a';
+
+      if (!curr->children[idx]) {
+        curr->children[idx] =  new TrieNode();
+      }
+      
+      curr = curr->children[idx];
+      curr->indices.insert(frequency);
+
+      if (curr->indices.size() == 11) {
+        curr->indices.erase(curr->indices.begin());
+      }
+    }
+  }
+
+private:
+  TrieNode root;
+};
+
